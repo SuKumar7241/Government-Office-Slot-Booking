@@ -31,13 +31,18 @@ router.get('/offices/by-service/:serviceId', (req, res) => {
 });
 
 // GET available time slots
-router.get('/slots', (req, res) => {
+router.get('/slots', async (req, res) => {
   const { officeId, serviceId, date } = req.query;
   if (!officeId || !serviceId || !date) {
     return res.status(400).json({ error: 'officeId, serviceId, and date are required' });
   }
-  const slots = store.getAvailableSlots(officeId, serviceId, date);
-  res.json(slots);
+  try {
+    const slots = await store.getAvailableSlots(officeId, serviceId, date);
+    res.json(slots);
+  } catch (err) {
+    console.error('Error fetching slots:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 module.exports = router;
