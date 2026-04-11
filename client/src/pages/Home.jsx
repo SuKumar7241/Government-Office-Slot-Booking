@@ -9,12 +9,12 @@ import MapSection from '../components/MapSection';
 
 /* ── SERVICE DATA ── */
 const services = [
-  { name: 'Passport',           icon: '🛂', time: '~15 min', color: 'bg-blue-100'  },
-  { name: 'License',            icon: '🚗', time: '~10 min', color: 'bg-rose-100'  },
-  { name: 'Birth Certificate',  icon: '📄', time: '~8 min',  color: 'bg-emerald-100' },
-  { name: 'Property',           icon: '🏠', time: '~20 min', color: 'bg-amber-100' },
-  { name: 'Income Certificate', icon: '💰', time: '~10 min', color: 'bg-purple-100' },
-  { name: 'Aadhaar Update',     icon: '🪪', time: '~12 min', color: 'bg-cyan-100'  },
+  { name: 'Passport',           icon: '🛂', time: '~15 min', color: 'bg-slate-50 border border-slate-100'  },
+  { name: 'License',            icon: '🚗', time: '~10 min', color: 'bg-slate-50 border border-slate-100'  },
+  { name: 'Birth Certificate',  icon: '📄', time: '~8 min',  color: 'bg-slate-50 border border-slate-100' },
+  { name: 'Property',           icon: '🏠', time: '~20 min', color: 'bg-slate-50 border border-slate-100' },
+  { name: 'Income Certificate', icon: '💰', time: '~10 min', color: 'bg-slate-50 border border-slate-100' },
+  { name: 'Aadhaar Update',     icon: '🪪', time: '~12 min', color: 'bg-slate-50 border border-slate-100'  },
 ];
 
 /* ── HOW IT WORKS ── */
@@ -23,25 +23,25 @@ const howItWorks = [
     title: 'Book Online',
     desc: 'Schedule your government office n anywhere, anytime.',
     Icon: Globe,
-    iconBg: 'bg-blue-600',
+    iconBg: 'bg-blue-50 text-[var(--gov-primary)]',
   },
   {
     title: 'Skip the Queue',
     desc: 'No more waiting in long. virtually when you arrive.',
     Icon: Ticket,
-    iconBg: 'bg-orange-500',
+    iconBg: 'bg-blue-50 text-[var(--gov-primary)]',
   },
   {
     title: 'Live Status',
     desc: 'Track your queue position and estimated t real-time.',
     Icon: Smartphone,
-    iconBg: 'bg-pink-600',
+    iconBg: 'bg-blue-50 text-[var(--gov-primary)]',
   },
   {
     title: 'SMS Alerts',
     desc: "Get notified when it's almost yarn. Never miss your slot.",
     Icon: CalendarDays,
-    iconBg: 'bg-green-600',
+    iconBg: 'bg-blue-50 text-[var(--gov-primary)]',
   },
 ];
 
@@ -60,47 +60,47 @@ export default function Home() {
             ROW 1 — STAT CARDS
         ══════════════════════════════════════════════ */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
-          {/* Blue — Total Citizens Served */}
-          <div className="bg-gradient-to-br from-[var(--gov-gradient-end)] to-[var(--gov-gradient-start)] rounded-2xl p-5 text-white flex items-center gap-4 shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300 cursor-default group">
-            <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-white/30 transition-colors duration-300">
-              <Users className="w-8 h-8" />
+          {/* Total Citizens Served */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-all duration-300">
+            <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center shrink-0">
+              <Users className="w-6 h-6 text-[var(--gov-primary)]" />
             </div>
             <div>
-              <div className="text-[11px] text-blue-200 font-semibold uppercase tracking-wider bg-blue-500/40 rounded-full px-2 py-0.5 inline-block">Total Citizens Served</div>
-              <div className="text-4xl font-black leading-tight mt-1">50,123</div>
+              <div className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-1">Total Citizens Served</div>
+              <div className="text-3xl font-extrabold text-gray-900">50,123</div>
             </div>
           </div>
 
-          {/* Green — Available Services */}
-          <div className="bg-gradient-to-br from-[#16a34a] to-[#15803d] rounded-2xl p-5 text-white flex items-center gap-4 shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300 cursor-default group">
-            <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-white/30 transition-colors duration-300">
-              <ClipboardList className="w-8 h-8" />
+          {/* Available Services */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-all duration-300">
+            <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center shrink-0">
+              <ClipboardList className="w-6 h-6 text-[var(--gov-primary)]" />
             </div>
             <div>
-              <div className="text-[11px] text-emerald-200 font-semibold uppercase tracking-wider bg-green-500/40 rounded-full px-2 py-0.5 inline-block">Available Services</div>
-              <div className="text-4xl font-black leading-tight mt-1">15</div>
+              <div className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-1">Available Services</div>
+              <div className="text-3xl font-extrabold text-gray-900">15</div>
             </div>
           </div>
 
-          {/* Orange — Office Locations */}
-          <div className="bg-gradient-to-br from-[#ea580c] to-[#c2410c] rounded-2xl p-5 text-white flex items-center gap-4 shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300 cursor-default group">
-            <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-white/30 transition-colors duration-300">
-              <MapPin className="w-8 h-8" />
+          {/* Office Locations */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-all duration-300">
+            <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center shrink-0">
+              <MapPin className="w-6 h-6 text-[var(--gov-primary)]" />
             </div>
             <div>
-              <div className="text-[11px] text-orange-200 font-semibold uppercase tracking-wider bg-orange-500/40 rounded-full px-2 py-0.5 inline-block">Office Locations</div>
-              <div className="text-4xl font-black leading-tight mt-1">8</div>
+              <div className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-1">Office Locations</div>
+              <div className="text-3xl font-extrabold text-gray-900">8</div>
             </div>
           </div>
 
-          {/* Yellow-Green — Citizens' Satisfaction */}
-          <div className="bg-gradient-to-br from-[#65a30d] to-[#4d7c0f] rounded-2xl p-5 text-white flex items-center gap-4 shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300 cursor-default group">
-            <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-white/30 transition-colors duration-300">
-              <CheckCircle className="w-8 h-8" />
+          {/* Citizens' Satisfaction */}
+          <div className="bg-white border border-gray-200 rounded-2xl p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-all duration-300">
+            <div className="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center shrink-0">
+              <CheckCircle className="w-6 h-6 text-[var(--gov-primary)]" />
             </div>
             <div>
-              <div className="text-[11px] text-lime-200 font-semibold uppercase tracking-wider bg-lime-500/40 rounded-full px-2 py-0.5 inline-block">Citizens' Satisfaction</div>
-              <div className="text-4xl font-black leading-tight mt-1">96.2%</div>
+              <div className="text-xs text-gray-500 font-semibold uppercase tracking-wider mb-1">Citizens' Satisfaction</div>
+              <div className="text-3xl font-extrabold text-gray-900">96.2%</div>
             </div>
           </div>
         </div>
@@ -114,10 +114,10 @@ export default function Home() {
             <Link
               to={bookLink}
               id="book-appointment-btn"
-              className="bg-gradient-to-br from-[#ea580c] to-[#dc2626] hover:from-[#c2410c] hover:to-[#b91c1c] text-white rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl shadow-lg group"
+              className="bg-[var(--gov-primary)] hover:bg-[var(--gov-primary-light)] text-white rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-xl shadow-md group border border-transparent"
             >
-              <div className="w-16 h-16 bg-white/20 rounded-xl flex items-center justify-center mb-4 group-hover:bg-white/30 group-hover:scale-110 transition-all duration-300">
-                <CalendarDays className="w-9 h-9" />
+              <div className="w-14 h-14 bg-white/10 rounded-full flex items-center justify-center mb-4 group-hover:bg-white/20 transition-all duration-300">
+                <CalendarDays className="w-7 h-7" />
               </div>
               <div className="font-bold text-base leading-snug">Book Appointment</div>
             </Link>
@@ -125,10 +125,10 @@ export default function Home() {
             <Link
               to={isAuthenticated ? '/queue' : '/login'}
               id="check-queue-btn"
-              className="bg-white hover:bg-blue-50 border-2 border-gray-200 hover:border-blue-300 text-gray-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 hover:-translate-y-1.5 hover:shadow-2xl shadow-md group"
+              className="bg-white hover:bg-slate-50 border border-gray-200 hover:border-[var(--gov-primary)] text-gray-800 rounded-2xl p-6 flex flex-col items-center justify-center text-center transition-all duration-300 hover:-translate-y-1 hover:shadow-md shadow-sm group"
             >
-              <div className="w-16 h-16 bg-blue-50 group-hover:bg-blue-100 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-all duration-300">
-                <Ticket className="w-9 h-9 text-blue-600" />
+              <div className="w-14 h-14 bg-slate-50 group-hover:bg-blue-50 rounded-full flex items-center justify-center mb-4 transition-all duration-300">
+                <Ticket className="w-7 h-7 text-[var(--gov-primary)]" />
               </div>
               <div className="font-bold text-base leading-snug">Check Queue Status</div>
             </Link>
@@ -137,7 +137,7 @@ export default function Home() {
           {/* Right — How It Works */}
           <div className="lg:col-span-8">
             <h2 className="text-2xl font-extrabold text-gray-900 mb-4 flex items-center gap-2">
-              <span className="w-1.5 h-7 bg-blue-600 rounded-full"></span>
+              <span className="w-1.5 h-7 bg-[var(--gov-primary)] rounded-full"></span>
               How It Works
             </h2>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -146,7 +146,7 @@ export default function Home() {
                   key={i}
                   className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-default relative overflow-hidden"
                 >
-                  <div className={`w-12 h-12 ${f.iconBg} rounded-xl flex items-center justify-center text-white mb-4 shadow-md group-hover:scale-110 transition-transform duration-300`}>
+                  <div className={`w-12 h-12 ${f.iconBg} rounded-full flex items-center justify-center mb-4 transition-transform duration-300`}>
                     <f.Icon className="w-6 h-6" />
                   </div>
                   <h3 className="font-bold text-sm text-gray-900 mb-1.5">{f.title}</h3>
@@ -165,7 +165,7 @@ export default function Home() {
           <div className="lg:col-span-4 bg-white rounded-2xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-lg transition-shadow duration-300 flex flex-col">
             <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
               <h2 className="font-extrabold text-gray-900 text-lg flex items-center gap-2">
-                <span className="w-1.5 h-7 bg-orange-500 rounded-full"></span>
+                <span className="w-1.5 h-7 bg-[var(--gov-primary)] rounded-full"></span>
                 Find Office by Map
               </h2>
               <span className="text-xs text-gray-400 bg-gray-100 px-2 py-1 rounded-full">8 Locations</span>
@@ -178,7 +178,7 @@ export default function Home() {
           {/* Right — Available Services */}
           <div className="lg:col-span-8">
             <h2 className="text-2xl font-extrabold text-gray-900 mb-4 flex items-center gap-2">
-              <span className="w-1.5 h-7 bg-emerald-500 rounded-full"></span>
+              <span className="w-1.5 h-7 bg-[var(--gov-primary)] rounded-full"></span>
               Available Services
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -188,7 +188,7 @@ export default function Home() {
                   className="bg-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group cursor-default"
                 >
                   <div className="flex items-start gap-4">
-                    <div className={`w-14 h-14 ${s.color} rounded-xl flex items-center justify-center text-2xl shrink-0 shadow-md group-hover:scale-110 group-hover:shadow-lg transition-all duration-300`}>
+                    <div className={`w-14 h-14 ${s.color} rounded-full flex items-center justify-center text-2xl shrink-0 transition-transform duration-300`}>
                       {s.icon}
                     </div>
                     <div className="flex-1 min-w-0">
