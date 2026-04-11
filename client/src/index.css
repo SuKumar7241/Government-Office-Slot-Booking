@@ -6,21 +6,22 @@
    ======================================== */
 
 :root {
-  --gov-primary: #1e3a5f;
-  --gov-primary-light: #2d5286;
-  --gov-accent: #f59e0b;
-  --gov-accent-hover: #d97706;
-  --gov-success: #10b981;
-  --gov-danger: #ef4444;
-  --gov-warning: #f59e0b;
-  --gov-info: #3b82f6;
-  --gov-bg: #f0f4f8;
+  /* Professional, eye-soothing light mode palette */
+  --gov-primary: #005ea2;
+  --gov-primary-light: #2c8acc;
+  --gov-accent: #e5a000;
+  --gov-accent-hover: #c08500;
+  --gov-success: #00a91c;
+  --gov-danger: #d54309;
+  --gov-warning: #ffbe2e;
+  --gov-info: #00bde3;
+  --gov-bg: #f4f6f9;
   --gov-surface: #ffffff;
-  --gov-text: #1e293b;
-  --gov-text-muted: #64748b;
-  --gov-border: #e2e8f0;
-  --gov-gradient-start: #1e3a5f;
-  --gov-gradient-end: #2563eb;
+  --gov-text: #1b1b1b;
+  --gov-text-muted: #565c65;
+  --gov-border: #dfe1e2;
+  --gov-gradient-start: #005ea2;
+  --gov-gradient-end: #1a4480;
 }
 
 * {

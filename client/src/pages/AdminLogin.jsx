@@ -33,7 +33,7 @@ export default function AdminLogin() {
       <div className="w-full max-w-md animate-fade-in-up">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-[#1e1e2e] to-[#312e81] rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg shadow-indigo-500/20">
+          <div className="w-16 h-16 bg-gradient-to-br from-[var(--gov-primary)] to-[var(--gov-gradient-end)] rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg shadow-indigo-500/20">
             ⚙️
           </div>
           <h1 className="text-3xl font-bold text-gray-900">Admin Portal</h1>
@@ -87,7 +87,7 @@ export default function AdminLogin() {
               className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-200 flex items-center justify-center gap-2
                 ${loading
                   ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-                  : 'bg-gradient-to-r from-[#1e1e2e] to-[#4f46e5] text-white hover:shadow-lg hover:shadow-indigo-500/25 hover:-translate-y-0.5'}`}
+                  : 'bg-gradient-to-r from-[var(--gov-primary)] to-[var(--gov-gradient-end)] text-white hover:shadow-lg hover:shadow-indigo-500/25 hover:-translate-y-0.5'}`}
             >
               {loading ? 'Signing in...' : '🔐 Admin Sign In'}
             </button>

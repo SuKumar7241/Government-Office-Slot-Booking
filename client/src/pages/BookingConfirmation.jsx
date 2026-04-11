@@ -50,7 +50,7 @@ export default function BookingConfirmation() {
       </div>
 
       {/* Token Card */}
-      <div className="bg-gradient-to-br from-[#1e3a5f] to-[#2563eb] rounded-2xl p-8 text-center text-white shadow-xl shadow-blue-500/20 mb-6 animate-fade-in-up stagger-1">
+      <div className="bg-gradient-to-br from-[var(--gov-primary)] to-[var(--gov-gradient-end)] rounded-2xl p-8 text-center text-white shadow-xl shadow-blue-500/20 mb-6 animate-fade-in-up stagger-1">
         <p className="text-blue-200 text-sm font-medium uppercase tracking-widest mb-2">Your Token Number</p>
         <div className="text-5xl sm:text-6xl font-extrabold tracking-wider mb-4">{appt.token}</div>
         <div className="flex items-center justify-center gap-6 text-sm text-blue-100">

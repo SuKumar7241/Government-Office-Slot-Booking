@@ -61,7 +61,7 @@ export default function Home() {
         ══════════════════════════════════════════════ */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-5">
           {/* Blue — Total Citizens Served */}
-          <div className="bg-gradient-to-br from-[#2563eb] to-[#1d4ed8] rounded-2xl p-5 text-white flex items-center gap-4 shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300 cursor-default group">
+          <div className="bg-gradient-to-br from-[var(--gov-gradient-end)] to-[var(--gov-gradient-start)] rounded-2xl p-5 text-white flex items-center gap-4 shadow-lg hover:shadow-xl hover:scale-[1.03] transition-all duration-300 cursor-default group">
             <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center shrink-0 group-hover:bg-white/30 transition-colors duration-300">
               <Users className="w-8 h-8" />
             </div>
@@ -212,7 +212,7 @@ export default function Home() {
       {/* ══════════════════════════════════════════════
           CTA BANNER — full-width edge-to-edge
       ══════════════════════════════════════════════ */}
-      <div className="w-full bg-gradient-to-r from-[#1e3a5f] via-[#1e40af] to-[#2563eb] px-10 py-12 text-center shadow-xl relative overflow-hidden">
+      <div className="w-full bg-gradient-to-r from-[var(--gov-primary)] via-[var(--gov-primary-light)] to-[var(--gov-gradient-end)] px-10 py-12 text-center shadow-xl relative overflow-hidden">
         {/* Decorative circles */}
         <div className="absolute top-0 left-0 w-40 h-40 bg-white/5 rounded-full -translate-x-1/2 -translate-y-1/2"></div>
         <div className="absolute bottom-0 right-0 w-56 h-56 bg-white/5 rounded-full translate-x-1/3 translate-y-1/3"></div>

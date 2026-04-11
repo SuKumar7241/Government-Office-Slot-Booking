@@ -48,9 +48,9 @@ export default function Navbar() {
 
           {/* ── LOGO ── */}
           <Link to="/" className="flex items-center gap-2 group">
-            <Building2 className="w-8 h-8 text-[#1e3a5f] group-hover:text-blue-700 transition-colors" />
+            <Building2 className="w-8 h-8 text-[var(--gov-primary)] group-hover:text-blue-700 transition-colors" />
             <div>
-              <span className="text-[#1e3a5f] font-bold text-lg tracking-tight">GovQueue</span>
+              <span className="text-[var(--gov-primary)] font-bold text-lg tracking-tight">GovQueue</span>
               <span className="hidden sm:block text-gray-400 text-[10px] leading-tight -mt-0.5">Smart Queue Management</span>
             </div>
           </Link>
@@ -79,7 +79,7 @@ export default function Navbar() {
                 <Link to="/login" className="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:text-blue-700 hover:bg-gray-50 transition-all">
                   Sign In
                 </Link>
-                <Link to="/signup" className="px-4 py-2 rounded-lg text-sm font-semibold bg-[#1e3a5f] text-white hover:bg-[#2d5286] transition-all">
+                <Link to="/signup" className="px-4 py-2 rounded-lg text-sm font-semibold bg-[var(--gov-primary)] text-white hover:bg-[var(--gov-primary-light)] transition-all">
                   Sign Up
                 </Link>
                 <Link to="/admin/login" className="px-4 py-2 rounded-lg text-sm font-medium text-amber-600 hover:bg-amber-50 transition-all border border-amber-200">

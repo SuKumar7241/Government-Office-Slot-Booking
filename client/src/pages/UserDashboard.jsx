@@ -51,7 +51,7 @@ export default function UserDashboard() {
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
       {/* Welcome Header */}
-      <div className="bg-gradient-to-r from-[#1e3a5f] to-[#2563eb] rounded-2xl p-8 mb-8 shadow-xl shadow-blue-500/15 animate-fade-in-up">
+      <div className="bg-gradient-to-r from-[var(--gov-primary)] to-[var(--gov-gradient-end)] rounded-2xl p-8 mb-8 shadow-xl shadow-blue-500/15 animate-fade-in-up">
         <div className="flex items-center gap-4">
           <div className="w-14 h-14 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center text-2xl font-bold text-white">
             {user?.name?.charAt(0)?.toUpperCase() || '?'}

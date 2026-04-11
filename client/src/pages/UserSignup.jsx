@@ -42,7 +42,7 @@ export default function UserSignup() {
     <div className="min-h-[85vh] flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-md animate-fade-in-up">
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-gradient-to-br from-[#1e3a5f] to-[#2563eb] rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg shadow-blue-500/20">
+          <div className="w-16 h-16 bg-gradient-to-br from-[var(--gov-primary)] to-[var(--gov-gradient-end)] rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 shadow-lg shadow-blue-500/20">
             🏛️
           </div>
           <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
@@ -130,7 +130,7 @@ export default function UserSignup() {
               disabled={!canSubmit || loading}
               className={`w-full py-3.5 rounded-xl font-bold text-sm transition-all duration-200 mt-2 flex items-center justify-center gap-2
                 ${canSubmit && !loading
-                  ? 'bg-gradient-to-r from-[#1e3a5f] to-[#2563eb] text-white hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5'
+                  ? 'bg-gradient-to-r from-[var(--gov-primary)] to-[var(--gov-gradient-end)] text-white hover:shadow-lg hover:shadow-blue-500/25 hover:-translate-y-0.5'
                   : 'bg-gray-100 text-gray-400 cursor-not-allowed'}`}
             >
               {loading ? 'Creating account...' : '✨ Create Account'}

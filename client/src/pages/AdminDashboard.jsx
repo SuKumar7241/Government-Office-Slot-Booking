@@ -159,7 +159,7 @@ export default function AdminDashboard() {
     <div className="flex h-[calc(100vh-64px)] bg-gray-50">
 
       {/* ── SIDEBAR ── */}
-      <aside className="w-56 bg-[#0f1d36] flex flex-col shrink-0">
+      <aside className="w-56 bg-[var(--gov-primary)] flex flex-col shrink-0">
         <div className="px-5 py-5 border-b border-white/10">
           <div className="flex items-center gap-2.5">
             <div className="w-9 h-9 bg-blue-500 rounded-lg flex items-center justify-center text-white font-black text-lg">G</div>
