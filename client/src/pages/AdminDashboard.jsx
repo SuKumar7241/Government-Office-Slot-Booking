@@ -606,7 +606,7 @@ export default function AdminDashboard() {
                           ${sms.type === 'confirmation' ? 'bg-emerald-100 text-emerald-700' : sms.type === 'alert' ? 'bg-amber-100 text-amber-700' : 'bg-blue-100 text-blue-700'}`}>{sms.type}</span>
                       </div>
                       <p className="text-xs text-gray-500">{sms.message}</p>
-                      <p className="text-[10px] text-gray-400 mt-1">{new Date(sms.sentAt).toLocaleString()}</p>
+                      <p className="text-[10px] text-gray-400 mt-1">{new Date(sms.createdAt || sms.sentAt).toLocaleString()}</p>
                     </div>
                   ))}
                 </div>

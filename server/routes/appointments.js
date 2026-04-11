@@ -5,189 +5,247 @@ const express = require('express');
 const router = express.Router();
 const store = require('../data/store');
 const sms = require('../utils/sms');
+const Appointment = require('../models/Appointment');
+const QueueToken = require('../models/QueueToken');
 
 // POST: Book a new appointment
-router.post('/', (req, res) => {
-  const { name, phone, serviceId, officeId, date, timeSlot } = req.body;
+router.post('/', async (req, res) => {
+  try {
+    const { name, phone, serviceId, officeId, date, timeSlot } = req.body;
 
-  if (!name || !phone || !serviceId || !officeId || !date || !timeSlot) {
-    return res.status(400).json({ error: 'All fields are required' });
+    if (!name || !phone || !serviceId || !officeId || !date || !timeSlot) {
+      return res.status(400).json({ error: 'All fields are required' });
+    }
+
+    // Validate name: letters, spaces, dots only — no numbers
+    if (!/^[a-zA-Z\s.]{2,}$/.test(name.trim())) {
+      return res.status(400).json({ error: 'Invalid name. Use only letters, spaces and dots (min 2 characters)' });
+    }
+
+    // Validate phone: exactly 10 digits
+    if (!/^[0-9]{10}$/.test(phone)) {
+      return res.status(400).json({ error: 'Invalid phone number. Must be exactly 10 digits' });
+    }
+
+    // Reject past dates
+    const now = new Date();
+    const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+    if (date < today) {
+      return res.status(400).json({ error: 'Cannot book appointments for past dates' });
+    }
+
+    // Check slot availability
+    const slots = await store.getAvailableSlots(officeId, serviceId, date);
+    const slot = slots.find(s => s.label === timeSlot);
+    if (!slot || slot.available <= 0) {
+      return res.status(400).json({ error: 'Selected slot is full' });
+    }
+
+    const token = await store.generateToken();
+    const appointment = await Appointment.create({
+      name,
+      phone,
+      serviceId,
+      officeId,
+      date,
+      timeSlot,
+      token,
+      status: 'confirmed',
+      type: 'booked',
+      bookedByUserId: req.body.bookedByUserId || null,
+    });
+
+    // Create queue token
+    const queueToken = await QueueToken.create({
+      token,
+      appointmentId: appointment._id.toString(),
+      officeId,
+      serviceId,
+      date,
+      timeSlot,
+      status: 'waiting',
+      type: 'booked',
+      name,
+      phone,
+    });
+
+    // Send confirmation SMS
+    sms.sendBookingConfirmation({ ...appointment.toObject(), token });
+
+    // Emit socket event
+    const io = req.app.get('io');
+    if (io) {
+      io.emit('queue-updated', { officeId, serviceId });
+      io.emit('appointment-booked', { appointment, queueToken });
+    }
+
+    res.status(201).json({ appointment, queueToken });
+  } catch (err) {
+    console.error('Booking error:', err);
+    res.status(500).json({ error: 'Server error' });
   }
-
-  // Validate name: letters, spaces, dots only — no numbers
-  if (!/^[a-zA-Z\s.]{2,}$/.test(name.trim())) {
-    return res.status(400).json({ error: 'Invalid name. Use only letters, spaces and dots (min 2 characters)' });
-  }
-
-  // Validate phone: exactly 10 digits
-  if (!/^[0-9]{10}$/.test(phone)) {
-    return res.status(400).json({ error: 'Invalid phone number. Must be exactly 10 digits' });
-  }
-
-  // Reject past dates
-  const now = new Date();
-  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
-  if (date < today) {
-    return res.status(400).json({ error: 'Cannot book appointments for past dates' });
-  }
-
-  // Check slot availability
-  const slots = store.getAvailableSlots(officeId, serviceId, date);
-  const slot = slots.find(s => s.label === timeSlot);
-  if (!slot || slot.available <= 0) {
-    return res.status(400).json({ error: 'Selected slot is full' });
-  }
-
-  const token = store.generateToken();
-  const appointment = {
-    id: store.uuidv4(),
-    name,
-    phone,
-    serviceId,
-    officeId,
-    date,
-    timeSlot,
-    token,
-    status: 'confirmed', // confirmed, checked-in, completed, cancelled, no-show
-    type: 'booked',
-    bookedByUserId: req.body.bookedByUserId || null,
-    createdAt: new Date().toISOString(),
-  };
-
-  store.appointments.push(appointment);
-
-  // Create queue token
-  const queueToken = {
-    id: store.uuidv4(),
-    token,
-    appointmentId: appointment.id,
-    officeId,
-    serviceId,
-    date,
-    timeSlot,
-    status: 'waiting', // waiting, called, serving, completed, skipped
-    type: 'booked',
-    name,
-    phone,
-    createdAt: Date.now(),
-  };
-  store.queueTokens.push(queueToken);
-
-  // Send confirmation SMS
-  sms.sendBookingConfirmation(appointment);
-
-  // Emit socket event
-  const io = req.app.get('io');
-  if (io) {
-    io.emit('queue-updated', { officeId, serviceId });
-    io.emit('appointment-booked', { appointment, queueToken });
-  }
-
-  res.status(201).json({ appointment, queueToken });
 });
 
 // GET: Get appointment by ID
-router.get('/:id', (req, res) => {
-  const appt = store.appointments.find(a => a.id === req.params.id);
-  if (!appt) return res.status(404).json({ error: 'Appointment not found' });
-  
-  const qToken = store.queueTokens.find(t => t.appointmentId === appt.id);
-  const position = qToken ? store.getQueuePosition(qToken.id) : null;
-  const waitTime = position ? store.estimateWaitTime(appt.officeId, appt.serviceId, position - 1) : 0;
+router.get('/:id', async (req, res) => {
+  try {
+    const appt = await Appointment.findById(req.params.id);
+    if (!appt) return res.status(404).json({ error: 'Appointment not found' });
 
-  res.json({ ...appt, queuePosition: position, estimatedWaitMinutes: waitTime });
+    const qToken = await QueueToken.findOne({ appointmentId: appt._id.toString(), status: 'waiting' });
+    let position = null;
+    let waitTime = 0;
+
+    if (qToken) {
+      const ahead = await QueueToken.countDocuments({
+        officeId: qToken.officeId,
+        status: 'waiting',
+        createdAt: { $lt: qToken.createdAt },
+      });
+      position = ahead + 1;
+      waitTime = store.estimateWaitTime(appt.serviceId, position - 1);
+    }
+
+    res.json({ ...appt.toObject(), id: appt._id, queuePosition: position, estimatedWaitMinutes: waitTime });
+  } catch (err) {
+    console.error('Get appointment error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 // GET: Lookup by phone
-router.get('/by-phone/:phone', (req, res) => {
-  const appts = store.appointments.filter(a => a.phone === req.params.phone && a.status !== 'cancelled');
-  res.json(appts);
+router.get('/by-phone/:phone', async (req, res) => {
+  try {
+    const appts = await Appointment.find({ phone: req.params.phone, status: { $ne: 'cancelled' } });
+    res.json(appts);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 // GET: Lookup by userId (all bookings made by this user)
-router.get('/by-user/:userId', (req, res) => {
-  const appts = store.appointments.filter(a => a.bookedByUserId === req.params.userId && a.status !== 'cancelled');
-  res.json(appts);
+router.get('/by-user/:userId', async (req, res) => {
+  try {
+    const appts = await Appointment.find({ bookedByUserId: req.params.userId, status: { $ne: 'cancelled' } });
+    res.json(appts);
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 // GET: Lookup by token
-router.get('/by-token/:token', (req, res) => {
-  const appt = store.appointments.find(a => a.token === req.params.token);
-  if (!appt) return res.status(404).json({ error: 'Not found' });
+router.get('/by-token/:token', async (req, res) => {
+  try {
+    const appt = await Appointment.findOne({ token: req.params.token });
+    if (!appt) return res.status(404).json({ error: 'Not found' });
 
-  const qToken = store.queueTokens.find(t => t.appointmentId === appt.id);
-  const position = qToken ? store.getQueuePosition(qToken.id) : null;
-  const waitTime = position ? store.estimateWaitTime(appt.officeId, appt.serviceId, position - 1) : 0;
+    const qToken = await QueueToken.findOne({ appointmentId: appt._id.toString() });
+    let position = null;
+    let waitTime = 0;
 
-  res.json({ ...appt, queuePosition: position, estimatedWaitMinutes: waitTime, queueStatus: qToken?.status });
+    if (qToken && qToken.status === 'waiting') {
+      const ahead = await QueueToken.countDocuments({
+        officeId: qToken.officeId,
+        status: 'waiting',
+        createdAt: { $lt: qToken.createdAt },
+      });
+      position = ahead + 1;
+      waitTime = store.estimateWaitTime(appt.serviceId, position - 1);
+    }
+
+    res.json({ ...appt.toObject(), id: appt._id, queuePosition: position, estimatedWaitMinutes: waitTime, queueStatus: qToken?.status });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 // PUT: Reschedule
-router.put('/:id/reschedule', (req, res) => {
-  const { date, timeSlot } = req.body;
-  const appt = store.appointments.find(a => a.id === req.params.id);
-  if (!appt) return res.status(404).json({ error: 'Appointment not found' });
+router.put('/:id/reschedule', async (req, res) => {
+  try {
+    const { date, timeSlot } = req.body;
+    const appt = await Appointment.findById(req.params.id);
+    if (!appt) return res.status(404).json({ error: 'Appointment not found' });
 
-  // Check new slot availability
-  const slots = store.getAvailableSlots(appt.officeId, appt.serviceId, date);
-  const slot = slots.find(s => s.label === timeSlot);
-  if (!slot || slot.available <= 0) {
-    return res.status(400).json({ error: 'Selected slot is full' });
+    // Check new slot availability
+    const slots = await store.getAvailableSlots(appt.officeId, appt.serviceId, date);
+    const slot = slots.find(s => s.label === timeSlot);
+    if (!slot || slot.available <= 0) {
+      return res.status(400).json({ error: 'Selected slot is full' });
+    }
+
+    appt.date = date;
+    appt.timeSlot = timeSlot;
+    await appt.save();
+
+    // Update queue token
+    await QueueToken.findOneAndUpdate(
+      { appointmentId: appt._id.toString() },
+      { date, timeSlot }
+    );
+
+    sms.sendSMS(appt.phone, `📅 Your appointment ${appt.token} has been rescheduled to ${date} at ${timeSlot}.`, 'confirmation');
+
+    const io = req.app.get('io');
+    if (io) io.emit('queue-updated', { officeId: appt.officeId });
+
+    res.json(appt);
+  } catch (err) {
+    console.error('Reschedule error:', err);
+    res.status(500).json({ error: 'Server error' });
   }
-
-  appt.date = date;
-  appt.timeSlot = timeSlot;
-
-  // Update queue token
-  const qToken = store.queueTokens.find(t => t.appointmentId === appt.id);
-  if (qToken) {
-    qToken.date = date;
-    qToken.timeSlot = timeSlot;
-  }
-
-  sms.sendSMS(appt.phone, `📅 Your appointment ${appt.token} has been rescheduled to ${date} at ${timeSlot}.`, 'confirmation');
-
-  const io = req.app.get('io');
-  if (io) io.emit('queue-updated', { officeId: appt.officeId });
-
-  res.json(appt);
 });
 
 // PUT: Cancel
-router.put('/:id/cancel', (req, res) => {
-  const appt = store.appointments.find(a => a.id === req.params.id);
-  if (!appt) return res.status(404).json({ error: 'Appointment not found' });
+router.put('/:id/cancel', async (req, res) => {
+  try {
+    const appt = await Appointment.findById(req.params.id);
+    if (!appt) return res.status(404).json({ error: 'Appointment not found' });
 
-  appt.status = 'cancelled';
+    appt.status = 'cancelled';
+    await appt.save();
 
-  // Remove from queue
-  const idx = store.queueTokens.findIndex(t => t.appointmentId === appt.id);
-  if (idx !== -1) store.queueTokens[idx].status = 'cancelled';
+    // Update queue token
+    await QueueToken.findOneAndUpdate(
+      { appointmentId: appt._id.toString() },
+      { status: 'cancelled' }
+    );
 
-  sms.sendSMS(appt.phone, `❌ Your appointment ${appt.token} has been cancelled.`, 'confirmation');
+    sms.sendSMS(appt.phone, `❌ Your appointment ${appt.token} has been cancelled.`, 'confirmation');
 
-  const io = req.app.get('io');
-  if (io) io.emit('queue-updated', { officeId: appt.officeId });
+    const io = req.app.get('io');
+    if (io) io.emit('queue-updated', { officeId: appt.officeId });
 
-  res.json(appt);
+    res.json(appt);
+  } catch (err) {
+    console.error('Cancel error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 // PUT: Check-in
-router.put('/:id/checkin', (req, res) => {
-  const appt = store.appointments.find(a => a.id === req.params.id);
-  if (!appt) return res.status(404).json({ error: 'Appointment not found' });
+router.put('/:id/checkin', async (req, res) => {
+  try {
+    const appt = await Appointment.findById(req.params.id);
+    if (!appt) return res.status(404).json({ error: 'Appointment not found' });
 
-  appt.status = 'checked-in';
+    appt.status = 'checked-in';
+    await appt.save();
 
-  const qToken = store.queueTokens.find(t => t.appointmentId === appt.id);
-  if (qToken) qToken.checkedInAt = new Date().toISOString();
+    await QueueToken.findOneAndUpdate(
+      { appointmentId: appt._id.toString() },
+      { checkedInAt: new Date().toISOString() }
+    );
 
-  sms.sendSMS(appt.phone, `📍 You've checked in! Token: ${appt.token}. Please wait for your turn.`, 'confirmation');
+    sms.sendSMS(appt.phone, `📍 You've checked in! Token: ${appt.token}. Please wait for your turn.`, 'confirmation');
 
-  const io = req.app.get('io');
-  if (io) io.emit('queue-updated', { officeId: appt.officeId });
+    const io = req.app.get('io');
+    if (io) io.emit('queue-updated', { officeId: appt.officeId });
 
-  res.json(appt);
+    res.json(appt);
+  } catch (err) {
+    console.error('Checkin error:', err);
+    res.status(500).json({ error: 'Server error' });
+  }
 });
 
 module.exports = router;

@@ -1,20 +1,17 @@
 // ============================================
-// MOCK SMS SERVICE
+// MOCK SMS SERVICE (with MongoDB logging)
 // ============================================
 const store = require('../data/store');
+const SmsLog = require('../models/SmsLog');
 
 function sendSMS(phone, message, type = 'general') {
-  const smsEntry = {
-    id: store.uuidv4(),
-    phone,
-    message,
-    type, // confirmation, reminder, alert
-    sentAt: new Date().toISOString(),
-    status: 'delivered',
-  };
-  store.smsLog.push(smsEntry);
+  // Log to console (mock)
   console.log(`📱 [SMS → ${phone}] ${message}`);
-  return smsEntry;
+
+  // Persist to MongoDB (fire-and-forget)
+  SmsLog.create({ phone, message, type, status: 'delivered' }).catch(() => {});
+
+  return { phone, message, type, status: 'delivered' };
 }
 
 function sendBookingConfirmation(appointment) {

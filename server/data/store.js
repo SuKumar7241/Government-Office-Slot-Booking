@@ -1,8 +1,12 @@
 // ============================================
-// IN-MEMORY DATA STORE
+// STATIC DATA & HELPER FUNCTIONS
+// ============================================
+// Dynamic data (users, appointments, etc.) is now in MongoDB.
+// This file only holds static reference data and utility functions.
 // ============================================
 const { v4: uuidv4 } = require('uuid');
 const crypto = require('crypto');
+const Appointment = require('../models/Appointment');
 
 // ---------- AUTH HELPERS ----------
 function hashPassword(password) {
@@ -12,21 +16,6 @@ function hashPassword(password) {
 function generateSessionToken() {
   return uuidv4() + '-' + Date.now().toString(36);
 }
-
-// ---------- USERS & ADMINS ----------
-const users = [];
-const admins = [
-  {
-    id: 'admin-default',
-    name: 'Super Admin',
-    email: 'admin@govqueue.com',
-    password: hashPassword('admin123'),
-    officeId: 'off-1',
-    role: 'admin',
-    createdAt: new Date().toISOString(),
-  },
-];
-const sessions = [];
 
 // ---------- REGIONS (4 states, 4-5 cities each) ----------
 const regions = [
@@ -89,24 +78,15 @@ const slotConfig = {
   defaultCapacity: 5, // per slot
 };
 
-// ---------- APPOINTMENTS ----------
-let appointments = [];
-
-// ---------- QUEUE TOKENS ----------
-let tokenCounter = 100;
-let queueTokens = [];
-
-// ---------- SMS LOG ----------
-let smsLog = [];
+// ---------- TOKEN COUNTER (persisted via DB count) ----------
+async function generateToken() {
+  const count = await Appointment.countDocuments();
+  return `GQ-${101 + count}`;
+}
 
 // ============================================
 // HELPER FUNCTIONS
 // ============================================
-
-function generateToken() {
-  tokenCounter++;
-  return `GQ-${tokenCounter}`;
-}
 
 function generateTimeSlots(date) {
   const slots = [];
@@ -122,13 +102,17 @@ function generateTimeSlots(date) {
   return slots;
 }
 
-function getSlotBookingCount(officeId, serviceId, date, slotLabel) {
-  return appointments.filter(
-    a => a.officeId === officeId && a.serviceId === serviceId && a.date === date && a.timeSlot === slotLabel && a.status !== 'cancelled'
-  ).length;
+async function getSlotBookingCount(officeId, serviceId, date, slotLabel) {
+  return Appointment.countDocuments({
+    officeId,
+    serviceId,
+    date,
+    timeSlot: slotLabel,
+    status: { $ne: 'cancelled' },
+  });
 }
 
-function getAvailableSlots(officeId, serviceId, date) {
+async function getAvailableSlots(officeId, serviceId, date) {
   const now = new Date();
   const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
 
@@ -141,10 +125,17 @@ function getAvailableSlots(officeId, serviceId, date) {
   const isToday = date === today;
   const currentMinutes = now.getHours() * 60 + now.getMinutes();
 
+  // Batch-fetch all booked counts for this office+service+date
+  const bookings = await Appointment.aggregate([
+    { $match: { officeId, serviceId, date, status: { $ne: 'cancelled' } } },
+    { $group: { _id: '$timeSlot', count: { $sum: 1 } } },
+  ]);
+  const bookingMap = {};
+  bookings.forEach(b => { bookingMap[b._id] = b.count; });
+
   return slots
     .map(slot => {
-      const booked = getSlotBookingCount(officeId, serviceId, date, slot.label);
-      // If booking for today, mark slots whose start time has already passed
+      const booked = bookingMap[slot.label] || 0;
       const [startH, startM] = slot.start.split(':').map(Number);
       const slotStartMinutes = startH * 60 + startM;
       const isPast = isToday && slotStartMinutes <= currentMinutes;
@@ -157,39 +148,25 @@ function getAvailableSlots(officeId, serviceId, date) {
         isPast,
       };
     })
-    // For today, completely remove past slots instead of just marking them
     .filter(slot => !slot.isPast);
 }
 
-function estimateWaitTime(officeId, serviceId, tokenPosition) {
+function estimateWaitTime(serviceId, tokenPosition) {
   const service = services.find(s => s.id === serviceId);
   const avgTime = service ? service.avgServiceTime : 10;
   return tokenPosition * avgTime;
-}
-
-function getQueuePosition(tokenId) {
-  const activeQueue = queueTokens.filter(t => t.status === 'waiting').sort((a, b) => a.createdAt - b.createdAt);
-  const idx = activeQueue.findIndex(t => t.id === tokenId);
-  return idx === -1 ? null : idx + 1;
 }
 
 module.exports = {
   regions,
   services,
   offices,
-  appointments,
-  queueTokens,
-  smsLog,
   slotConfig,
-  users,
-  admins,
-  sessions,
   generateToken,
   generateTimeSlots,
   getSlotBookingCount,
   getAvailableSlots,
   estimateWaitTime,
-  getQueuePosition,
   hashPassword,
   generateSessionToken,
   uuidv4,
