@@ -113,21 +113,27 @@ async function getSlotBookingCount(officeId, serviceId, date, slotLabel) {
 }
 
 async function getAvailableSlots(officeId, serviceId, date, timezoneOffset) {
-  // Use client's timezone offset to calculate their local time
-  // timezoneOffset is in minutes (e.g., -330 for IST which is UTC+5:30)
-  const now = new Date();
-  let localNow;
-  if (timezoneOffset !== undefined && timezoneOffset !== null) {
-    // Convert UTC to client's local time
-    // JS getTimezoneOffset returns minutes BEHIND UTC (e.g., IST = -330)
-    // So client local time = UTC - offset_minutes
-    const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
-    localNow = new Date(utcMs - timezoneOffset * 60000);
+  // timezoneOffset from client: positive means ahead of UTC (e.g., 330 for IST = UTC+5:30)
+  // We shift UTC ms by the offset, then use getUTC* methods to read client-local values
+  const nowMs = Date.now();
+  let localYear, localMonth, localDay, currentMinutes;
+
+  if (timezoneOffset !== undefined && timezoneOffset !== null && !isNaN(timezoneOffset)) {
+    const clientMs = nowMs + timezoneOffset * 60000;
+    const shifted = new Date(clientMs);
+    localYear = shifted.getUTCFullYear();
+    localMonth = shifted.getUTCMonth() + 1;
+    localDay = shifted.getUTCDate();
+    currentMinutes = shifted.getUTCHours() * 60 + shifted.getUTCMinutes();
   } else {
-    localNow = now;
+    const now = new Date();
+    localYear = now.getFullYear();
+    localMonth = now.getMonth() + 1;
+    localDay = now.getDate();
+    currentMinutes = now.getHours() * 60 + now.getMinutes();
   }
 
-  const today = `${localNow.getFullYear()}-${String(localNow.getMonth() + 1).padStart(2, '0')}-${String(localNow.getDate()).padStart(2, '0')}`;
+  const today = `${localYear}-${String(localMonth).padStart(2, '0')}-${String(localDay).padStart(2, '0')}`;
 
   // Reject past dates entirely – return no slots
   if (date < today) {
@@ -136,7 +142,6 @@ async function getAvailableSlots(officeId, serviceId, date, timezoneOffset) {
 
   const slots = generateTimeSlots(date);
   const isToday = date === today;
-  const currentMinutes = localNow.getHours() * 60 + localNow.getMinutes();
 
   // Batch-fetch all booked counts for this office+service+date
   const bookings = await Appointment.aggregate([
