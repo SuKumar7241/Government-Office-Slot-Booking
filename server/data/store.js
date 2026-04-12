@@ -112,9 +112,22 @@ async function getSlotBookingCount(officeId, serviceId, date, slotLabel) {
   });
 }
 
-async function getAvailableSlots(officeId, serviceId, date) {
+async function getAvailableSlots(officeId, serviceId, date, timezoneOffset) {
+  // Use client's timezone offset to calculate their local time
+  // timezoneOffset is in minutes (e.g., -330 for IST which is UTC+5:30)
   const now = new Date();
-  const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-${String(now.getDate()).padStart(2, '0')}`;
+  let localNow;
+  if (timezoneOffset !== undefined && timezoneOffset !== null) {
+    // Convert UTC to client's local time
+    // JS getTimezoneOffset returns minutes BEHIND UTC (e.g., IST = -330)
+    // So client local time = UTC - offset_minutes
+    const utcMs = now.getTime() + now.getTimezoneOffset() * 60000;
+    localNow = new Date(utcMs - timezoneOffset * 60000);
+  } else {
+    localNow = now;
+  }
+
+  const today = `${localNow.getFullYear()}-${String(localNow.getMonth() + 1).padStart(2, '0')}-${String(localNow.getDate()).padStart(2, '0')}`;
 
   // Reject past dates entirely – return no slots
   if (date < today) {
@@ -123,7 +136,7 @@ async function getAvailableSlots(officeId, serviceId, date) {
 
   const slots = generateTimeSlots(date);
   const isToday = date === today;
-  const currentMinutes = now.getHours() * 60 + now.getMinutes();
+  const currentMinutes = localNow.getHours() * 60 + localNow.getMinutes();
 
   // Batch-fetch all booked counts for this office+service+date
   const bookings = await Appointment.aggregate([

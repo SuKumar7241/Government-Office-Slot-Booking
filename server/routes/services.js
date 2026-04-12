@@ -32,12 +32,13 @@ router.get('/offices/by-service/:serviceId', (req, res) => {
 
 // GET available time slots
 router.get('/slots', async (req, res) => {
-  const { officeId, serviceId, date } = req.query;
+  const { officeId, serviceId, date, tz } = req.query;
   if (!officeId || !serviceId || !date) {
     return res.status(400).json({ error: 'officeId, serviceId, and date are required' });
   }
   try {
-    const slots = await store.getAvailableSlots(officeId, serviceId, date);
+    const timezoneOffset = tz !== undefined ? parseInt(tz, 10) : undefined;
+    const slots = await store.getAvailableSlots(officeId, serviceId, date, timezoneOffset);
     res.json(slots);
   } catch (err) {
     console.error('Error fetching slots:', err);

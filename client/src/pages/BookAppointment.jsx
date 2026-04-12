@@ -51,7 +51,7 @@ export default function BookAppointment() {
         setForm(f => ({ ...f, date: '', timeSlot: '' }));
         return;
       }
-      api.get('/slots', { params: { officeId: form.officeId, serviceId: form.serviceId, date: form.date } })
+      api.get('/slots', { params: { officeId: form.officeId, serviceId: form.serviceId, date: form.date, tz: new Date().getTimezoneOffset() * -1 } })
         .then(res => setSlots(res.data));
     }
   }, [form.officeId, form.serviceId, form.date]);
