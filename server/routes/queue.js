@@ -17,7 +17,7 @@ router.get('/:officeId', async (req, res) => {
     let queue = await QueueToken.find(filter).lean();
 
     // Sort: serving first, then called, then waiting by creation time
-    const statusOrder = { serving: 0, called: 1, waiting: 2, completed: 3, skipped: 4 };
+    const statusOrder = { serving: 0, called: 1, waiting: 2, completed: 3, skipped: 4, 'no-show': 5 };
     queue.sort((a, b) => {
       const diff = (statusOrder[a.status] ?? 5) - (statusOrder[b.status] ?? 5);
       if (diff !== 0) return diff;
@@ -63,6 +63,7 @@ router.get('/:officeId/stats', async (req, res) => {
       serving: todayTokens.filter(t => t.status === 'serving').length,
       completed: todayTokens.filter(t => t.status === 'completed').length,
       skipped: todayTokens.filter(t => t.status === 'skipped').length,
+      noShow: todayTokens.filter(t => t.status === 'no-show').length,
       booked: todayTokens.filter(t => t.type === 'booked').length,
       walkIn: todayTokens.filter(t => t.type === 'walk-in').length,
     };

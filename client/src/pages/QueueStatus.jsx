@@ -51,8 +51,9 @@ export default function QueueStatus() {
     serving: { bg: 'bg-emerald-100', text: 'text-emerald-700', label: '🟢 Serving', pulse: true },
     called: { bg: 'bg-amber-100', text: 'text-amber-700', label: '🔔 Called' },
     waiting: { bg: 'bg-blue-100', text: 'text-blue-700', label: '⏳ Waiting' },
-    completed: { bg: 'bg-gray-100', text: 'text-gray-500', label: '✅ Done' },
+    completed: { bg: 'bg-green-100', text: 'text-green-600', label: '✅ Completed' },
     skipped: { bg: 'bg-red-100', text: 'text-red-600', label: '⏭️ Skipped' },
+    'no-show': { bg: 'bg-orange-100', text: 'text-orange-600', label: '🚫 No Show' },
   };
 
   const serving = queue.filter(t => t.status === 'serving');
@@ -91,12 +92,13 @@ export default function QueueStatus() {
         <>
           {/* Stats Cards */}
           {stats && (
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8 animate-fade-in-up stagger-2">
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8 animate-fade-in-up stagger-2">
               {[
                 { label: 'Total Today', value: stats.totalToday, icon: '📊', color: 'from-blue-500 to-blue-600' },
                 { label: 'Waiting', value: stats.waiting, icon: '⏳', color: 'from-amber-500 to-amber-600' },
                 { label: 'Now Serving', value: stats.serving + stats.called, icon: '🟢', color: 'from-emerald-500 to-emerald-600' },
-                { label: 'Completed', value: stats.completed, icon: '✅', color: 'from-gray-400 to-gray-500' },
+                { label: 'Completed', value: stats.completed, icon: '✅', color: 'from-green-500 to-green-600' },
+                { label: 'No Show', value: stats.noShow || 0, icon: '🚫', color: 'from-orange-500 to-orange-600' },
               ].map((s, i) => (
                 <div key={i} className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 text-center">
                   <div className={`w-12 h-12 bg-gradient-to-br ${s.color} rounded-xl flex items-center justify-center text-xl mx-auto mb-3 shadow-lg`}>
@@ -168,14 +170,15 @@ export default function QueueStatus() {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
-                    {queue.filter(t => t.status !== 'completed' && t.status !== 'cancelled').map((t, i) => {
+                    {queue.filter(t => t.status !== 'cancelled').map((t, i) => {
                       const style = statusStyles[t.status] || statusStyles.waiting;
+                      const isFinished = t.status === 'completed' || t.status === 'no-show';
                       return (
-                        <tr key={t.id} className="hover:bg-gray-50/50 transition-colors">
+                        <tr key={t.id} className={`transition-colors ${isFinished ? 'opacity-60 bg-gray-50/30' : 'hover:bg-gray-50/50'}`}>
                           <td className="px-6 py-3.5 text-gray-400 font-medium">{t.position || '—'}</td>
-                          <td className="px-6 py-3.5 font-bold text-[var(--gov-primary)]">{t.token}</td>
-                          <td className="px-6 py-3.5 font-medium text-gray-900">{t.name}</td>
-                          <td className="px-6 py-3.5 text-gray-600">{t.serviceName}</td>
+                          <td className={`px-6 py-3.5 font-bold ${isFinished ? 'text-gray-400' : 'text-[var(--gov-primary)]'}`}>{t.token}</td>
+                          <td className={`px-6 py-3.5 font-medium ${isFinished ? 'text-gray-400' : 'text-gray-900'}`}>{t.name}</td>
+                          <td className={`px-6 py-3.5 ${isFinished ? 'text-gray-400' : 'text-gray-600'}`}>{t.serviceName}</td>
                           <td className="px-6 py-3.5">
                             <span className={`px-2 py-0.5 rounded text-xs font-medium ${t.type === 'walk-in' ? 'bg-purple-100 text-purple-700' : 'bg-blue-50 text-blue-600'}`}>
                               {t.type}
