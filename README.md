@@ -321,11 +321,3 @@ npm run dev
 Events: queue-updated, token-called, appointment-booked
 ```
 
----
-
-
----
-
-## 📄 License
-
-MIT License — free to use, modify, and distribute.
