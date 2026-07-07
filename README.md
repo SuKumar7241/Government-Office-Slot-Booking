@@ -6,7 +6,6 @@
 
 A full-stack government appointment booking and real-time queue management platform that helps citizens skip long queues at government offices. Built with React, Node.js, MongoDB, and Socket.io.
 
-[![Built for](https://img.shields.io/badge/Built%20for-CodeQuest%20Hackathon%202026-blue?style=for-the-badge)](https://github.com/SuKumar7241/Government-Office-Slot-Booking)
 [![Tech](https://img.shields.io/badge/React%2019-Vite-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
 [![Backend](https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js)](https://nodejs.org)
 [![Database](https://img.shields.io/badge/MongoDB-Mongoose-47A248?style=for-the-badge&logo=mongodb)](https://mongodb.com)
