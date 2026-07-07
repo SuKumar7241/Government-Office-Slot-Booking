@@ -323,9 +323,6 @@ Events: queue-updated, token-called, appointment-booked
 
 ---
 
-## 👥 Team
-
-Built with ❤️ for **CodeQuest Hackathon 2026**
 
 ---
 
