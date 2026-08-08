@@ -61,7 +61,7 @@ export default function QueueStatus() {
   const waiting = queue.filter(t => t.status === 'waiting');
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-10 py-8 sm:py-12">
       {/* Header */}
       <div className="text-center mb-8 animate-fade-in-up">
         <h1 className="text-3xl sm:text-4xl font-bold text-gray-900">Live Queue Status</h1>

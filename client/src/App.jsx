@@ -19,7 +19,8 @@ export default function App() {
   const isHome = location.pathname === '/';
 
   return (
-    <div className="min-h-screen bg-[var(--gov-bg)]">
+    <div className="w-full min-h-screen bg-[var(--gov-bg)] flex flex-col">
+
       <Toaster
         position="top-right"
         toastOptions={{
@@ -35,7 +36,9 @@ export default function App() {
         }}
       />
       <Navbar />
-      <main className={isHome ? 'pb-0' : 'pt-10 pb-12'}>
+      <main className={`flex-1 w-full ${isHome ? 'pb-0' : 'pt-6 sm:pt-10 pb-12'}`}>
+
+
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />

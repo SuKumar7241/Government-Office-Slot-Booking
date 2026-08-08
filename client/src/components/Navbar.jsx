@@ -42,8 +42,9 @@ export default function Navbar() {
   const links = isAuthenticated ? navLinks.filter(l => l.show) : publicLinks;
 
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
-      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10">
+    <nav className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50 w-full">
+      <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-10">
+
         <div className="flex items-center justify-between h-16">
 
           {/* ── LOGO ── */}

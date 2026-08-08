@@ -21,7 +21,7 @@ export default function UserDashboard() {
     if (user?.id) {
       api.get(`/appointments/by-user/${user.id}`)
         .then(res => setAppointments(res.data))
-        .catch(() => {})
+        .catch(() => { })
         .finally(() => setLoading(false));
     } else {
       setLoading(false);
@@ -49,7 +49,7 @@ export default function UserDashboard() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+    <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-10 py-8 sm:py-12">
       {/* Welcome Header */}
       <div className="bg-gradient-to-r from-[var(--gov-primary)] to-[var(--gov-gradient-end)] rounded-2xl p-8 mb-8 shadow-xl shadow-blue-500/15 animate-fade-in-up">
         <div className="flex items-center gap-4">

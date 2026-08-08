@@ -51,10 +51,11 @@ export default function Home() {
 
   return (
     <div
-      className="bg-gray-50 min-h-[calc(100vh-64px)] flex flex-col"
+      className="bg-gray-50 min-h-[calc(100vh-64px)] flex flex-col w-full"
       style={{ fontFamily: "'Segoe UI', system-ui, -apple-system, sans-serif" }}
     >
-      <div className="flex-1 max-w-[1440px] w-full mx-auto px-6 lg:px-10 py-8 space-y-8">
+      <div className="flex-1 w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-10 py-8 space-y-8">
+
 
         {/* ══════════════════════════════════════════════
             ROW 1 — STAT CARDS
@@ -237,8 +238,9 @@ export default function Home() {
       {/* ══════════════════════════════════════════════
           FOOTER
       ══════════════════════════════════════════════ */}
-      <footer className="bg-white border-t border-gray-200 py-6 mt-auto">
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-10 flex flex-col sm:flex-row items-center justify-between gap-3">
+      <footer className="bg-white border-t border-gray-200 py-6 mt-auto w-full">
+        <div className="w-full max-w-[1800px] mx-auto px-4 sm:px-6 lg:px-10 flex flex-col sm:flex-row items-center justify-between gap-3">
+
           <p className="text-sm text-gray-500">
             © <span className="font-bold text-gray-700">GovQueue</span> - Government Appointment &amp; Queue Management System | 2024
           </p>

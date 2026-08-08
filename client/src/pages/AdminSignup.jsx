@@ -13,7 +13,7 @@ export default function AdminSignup() {
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
-    api.get('/offices').then(res => setOffices(res.data)).catch(() => {});
+    api.get('/offices').then(res => setOffices(res.data)).catch(() => { });
   }, []);
 
   const isValidEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);

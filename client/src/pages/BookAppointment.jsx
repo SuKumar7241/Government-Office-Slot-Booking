@@ -134,7 +134,7 @@ export default function BookAppointment() {
               className={`flex items-center gap-2 px-3 sm:px-4 py-2 rounded-full text-sm font-medium transition-all duration-300
                 ${i === step ? 'bg-[var(--gov-primary)] text-white shadow-lg shadow-blue-500/20' :
                   i < step ? 'bg-emerald-100 text-emerald-700 cursor-pointer hover:bg-emerald-200' :
-                  'bg-gray-100 text-gray-400'}`}
+                    'bg-gray-100 text-gray-400'}`}
             >
               <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold
                 ${i === step ? 'bg-white/20' : i < step ? 'bg-emerald-500 text-white' : 'bg-gray-200'}`}>
@@ -481,7 +481,7 @@ export default function BookAppointment() {
             >
               {loading ? (
                 <>
-                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"/></svg>
+                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" /></svg>
                   Booking...
                 </>
               ) : '✅ Confirm Booking'}
