@@ -92,7 +92,23 @@ mongoose
       console.log(`📡 Socket.io ready\n`);
     });
   })
-  .catch((err) => {
+  .catch(async (err) => {
     console.error('❌ MongoDB connection error:', err.message);
+    const localUri = 'mongodb://127.0.0.1:27017/govqueue';
+    if (MONGODB_URI !== localUri) {
+      console.log('🔄 Trying local MongoDB fallback at:', localUri);
+      try {
+        await mongoose.connect(localUri);
+        console.log('✅ Connected to local MongoDB');
+        await seedDefaultAdmin();
+        server.listen(PORT, () => {
+          console.log(`\n🏛️  GovQueue Backend running on http://localhost:${PORT}`);
+          console.log(`📡 Socket.io ready\n`);
+        });
+        return;
+      } catch (localErr) {
+        console.error('❌ Local MongoDB connection also failed:', localErr.message);
+      }
+    }
     process.exit(1);
   });
